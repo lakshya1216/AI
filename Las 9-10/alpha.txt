@@ -1,0 +1,59 @@
+# Alpha-Beta Pruning Example with Hardcoded Values
+
+def alpha_beta(depth, node_index, is_maximizing_player, values, alpha, beta, max_depth):
+    """
+    depth: current depth in the game tree
+    node_index: index of the current node
+    is_maximizing_player: True if maximizing player’s turn
+    values: list of terminal node values
+    alpha: best already explored option along the path to the root for maximizer
+    beta: best already explored option for minimizer
+    max_depth: maximum depth of the game tree
+    """
+    # Base case: leaf node reached
+    if depth == max_depth:
+        print(f"Reached leaf node[{node_index}] = {values[node_index]}")
+        return values[node_index]
+    
+    if is_maximizing_player:
+        best = float('-inf')
+        print(f"Maximizer at depth {depth}, α={alpha}, β={beta}")
+        # Left and right child indices: 2*i and 2*i + 1
+        for i in range(2):
+            val = alpha_beta(depth + 1, node_index * 2 + i, False, values, alpha, beta, max_depth)
+            best = max(best, val)
+            alpha = max(alpha, best)
+            print(f"  Maximizer updated best={best}, α={alpha}, β={beta}")
+            # Alpha-Beta Pruning
+            if beta <= alpha:
+                print("  ➤ Beta cutoff (β ≤ α)")
+                break
+        return best
+    else:
+        best = float('inf')
+        print(f"Minimizer at depth {depth}, α={alpha}, β={beta}")
+        for i in range(2):
+            val = alpha_beta(depth + 1, node_index * 2 + i, True, values, alpha, beta, max_depth)
+            best = min(best, val)
+            beta = min(beta, best)
+            print(f"  Minimizer updated best={best}, α={alpha}, β={beta}")
+            # Alpha-Beta Pruning
+            if beta <= alpha:
+                print("  ➤ Alpha cutoff (β ≤ α)")
+                break
+        return best
+
+
+# Hardcoded leaf node values (for example tree of depth 3)
+values = [3, 5, 6, 9, 1, 2, 0, -1]
+max_depth = 3
+
+print("=== Alpha-Beta Pruning ===")
+print("Game tree leaf values:", values)
+print("---------------------------")
+
+# Start with depth=0, node_index=0, and maximizer as first player
+optimal_value = alpha_beta(0, 0, True, values, float('-inf'), float('inf'), max_depth)
+
+print("\n---------------------------")
+print("Optimal value found:", optimal_value)

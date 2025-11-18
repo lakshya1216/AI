@@ -1,0 +1,52 @@
+# Knowledge Base (KB)
+kb = [
+    "Food(Apple)",
+    "Food(Vegetables)",
+    "Eats(Anil, Peanuts)",
+    "Alive(Anil)",
+    "Eats(Harry, Peanuts)",  # Because Harry eats everything Anil eats
+    "¬Killed(Anil)",         # Alive implies not killed
+    "¬Killed(Harry)",        # Assume Harry is alive too
+    "¬Killed(x) ∧ Eats(x, y) → Food(y)",  # Rule
+    "Food(x) → Likes(John, x)"            # Rule
+]
+
+query = "Likes(John, Peanuts)"
+
+print("=== INITIAL KNOWLEDGE BASE ===")
+for fact in kb:
+    print("-", fact)
+print("\n=== QUERY ===")
+print("Prove:", query)
+
+# Step 1: Check if Peanuts is food
+print("\nSTEP 1: Is Peanuts food?")
+is_food = False
+
+if "Food(Peanuts)" in kb:
+    print("Found directly: Food(Peanuts)")
+    is_food = True
+else:
+    print("Trying to infer Food(Peanuts) using rule: ¬Killed(x) ∧ Eats(x, y) → Food(y)")
+    if "Eats(Anil, Peanuts)" in kb and "¬Killed(Anil)" in kb:
+        inferred_fact = "Food(Peanuts)"
+        kb.append(inferred_fact)
+        is_food = True
+        print("Inferred:", inferred_fact)
+    else:
+        print("Could not infer Food(Peanuts).")
+
+# Step 2: Check if John likes Peanuts
+print("\nSTEP 2: Does John like Peanuts?")
+if is_food:
+    print("Premise true: Food(Peanuts)")
+    inferred_fact = "Likes(John, Peanuts)"
+    kb.append(inferred_fact)
+    print("Inferred:", inferred_fact)
+    print("\n✅ Query proved: Likes(John, Peanuts)")
+else:
+    print("❌ Query cannot be proved (Peanuts not known as food).")
+
+print("\n=== NEWLY ADDED FACTS ===")
+print("- Food(Peanuts)")
+print("- Likes(John, Peanuts)")
